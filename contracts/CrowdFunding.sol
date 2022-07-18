@@ -18,12 +18,19 @@ contract CrowdFunding {
       author = payable(msg.sender);
     }
 
+    modifier onlyOwner{
+      require(msg.sender == author,
+      "Only the owner can change the project status");
+      // en esta linea se incerta el codigo
+      _;
+    }
+
     function fundProject() public payable{
       author.transfer(msg.value);
       funds += msg.value;
     }
 
-    function changeProjectState(string calldata newState) public{
+    function changeProjectState(string calldata newState) public onlyOwner{
       state = newState;
     }
 }
