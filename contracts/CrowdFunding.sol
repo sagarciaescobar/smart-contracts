@@ -18,6 +18,15 @@ contract CrowdFunding {
       author = payable(msg.sender);
     }
 
+    event ProjectFund(
+      address contributor,
+      uint value
+    );
+
+    event ProjectStateChanged(
+      string state
+    );
+
     modifier onlyOwner{
       require(msg.sender == author,
       "Only the owner can change the project status");
@@ -25,12 +34,19 @@ contract CrowdFunding {
       _;
     }
 
-    function fundProject() public payable{
+    modifier isNotAuthor{
+      require(author != msg.sender, "As author you can not fund your own project");
+      _;
+    }
+
+    function fundProject() public payable isNotAuthor{
       author.transfer(msg.value);
       funds += msg.value;
+      emit ProjectFund(msg.sender, msg.value);
     }
 
     function changeProjectState(string calldata newState) public onlyOwner{
       state = newState;
+      emit ProjectStateChanged(newState);
     }
 }
